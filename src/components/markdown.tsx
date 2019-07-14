@@ -1,7 +1,8 @@
 import React from "react"
 import rehypeReact from "rehype-react"
-import { Typography } from "@material-ui/core"
+import { Typography, Theme } from "@material-ui/core"
 import { ThemeStyle } from "@material-ui/core/styles/createTypography"
+import { ThemeProvider } from "@material-ui/styles"
 
 const makeTypoVariant = (variant: ThemeStyle) => props => (
   <Typography variant={variant} {...props} />

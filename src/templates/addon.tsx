@@ -58,7 +58,12 @@ const AddonPlans: React.FC<
       {details.plans.map(plan => (
         <React.Fragment key={plan.name}>
           <Grid item md={3} container>
-            <Grid container component={Paper} style={{ padding: "1rem" }}>
+            <Grid
+              container
+              component={Paper}
+              style={{ padding: "1rem" }}
+              direction="column"
+            >
               <Typography variant="h4">{plan.name}</Typography>
               <Typography variant="body2">{plan.description}</Typography>
               <Typography variant="h3" component="span">
@@ -173,12 +178,10 @@ const AddonPage: React.FC<{ data: AddonPageData }> = ({ data }) => {
       </Grid>
       <Grid container alignItems="flex-start" spacing={3}>
         <Grid item md={4}>
-          <Paper style={{ overflow: "hidden" }}>
-            <img
-              src={data.markdownRemark.frontmatter.banner.publicURL}
-              style={{ maxWidth: "100%", display: "block" }}
-            />
-          </Paper>
+          <img
+            src={data.markdownRemark.frontmatter.banner.publicURL}
+            style={{ maxWidth: "100%", display: "block" }}
+          />
         </Grid>
         <Grid item md={8}>
           <article>
