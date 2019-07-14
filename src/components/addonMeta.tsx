@@ -38,7 +38,7 @@ const mapAddon = (
 })
 
 const AddonMeta: React.FC<AddonMetaProps> = ({ title, name, plan }) => (
-  <script className="gocommerce-product" type="application/json">
+  <script className="gocommerce-service" type="application/json">
     {JSON.stringify(mapAddon(title, name, plan), undefined, 2)}
   </script>
 )
