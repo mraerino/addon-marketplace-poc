@@ -8,11 +8,11 @@ The idea is based around taking away responsibilities from the monolithic Bitbal
 
 There are definitely some changes needed to make those services able to handle teams and subscriptions properly and I hope to point out those using this setup.
 
-![Netlify Add-On Marketplace Screenshot](docs/screenshot.png)
+[![Netlify Add-On Marketplace Screenshot](docs/screenshot.png)](https://addons-poc.netlify.com/)
 
 ## The Stack
 
-- **Static site** (this repo) for presentation of add-ons and their plans
+- [**Static site**](https://addons-poc.netlify.com/) (this repo) for presentation of add-ons and their plans
 - **GoCommerce** - Payment handling
 - **GoTrue** / Netlify Identity - User management
 - Add-on (de-)provisioning via cloud functions called from GoCommerce webhook
@@ -58,6 +58,8 @@ Handling teams in GoTrue is a requirement for using GoTrue in multiuser team set
 Cloud function allowing access to the Netlify API via a JWT containing an RSA-encrypted access token
 
 ### Static site (this repo)
+
+Live deployment: https://addons-poc.netlify.com/
 
 Gatsby site showing available add-ons based on markdown files inside the repository. Also renders metadata for add-on plans on detail pages.
 
