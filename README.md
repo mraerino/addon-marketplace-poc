@@ -8,6 +8,8 @@ The idea is based around taking away responsibilities from the monolithic Bitbal
 
 There are definitely some changes needed to make those services able to handle teams and subscriptions properly and I hope to point out those using this setup.
 
+![Netlify Add-on Marketplace Screenshot](docs/screenshot.png)
+
 ## The Stack
 
 - **Static site** for presentation of add-ons and their plans
