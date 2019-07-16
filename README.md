@@ -8,11 +8,11 @@ The idea is based around taking away responsibilities from the monolithic Bitbal
 
 There are definitely some changes needed to make those services able to handle teams and subscriptions properly and I hope to point out those using this setup.
 
-![Netlify Add-on Marketplace Screenshot](docs/screenshot.png)
+![Netlify Add-On Marketplace Screenshot](docs/screenshot.png)
 
 ## The Stack
 
-- **Static site** for presentation of add-ons and their plans
+- **Static site** (this repo) for presentation of add-ons and their plans
 - **GoCommerce** - Payment handling
 - **GoTrue** / Netlify Identity - User management
 - Add-on (de-)provisioning via cloud functions called from GoCommerce webhook
@@ -53,9 +53,11 @@ Handling teams in GoTrue is a requirement for using GoTrue in multiuser team set
 
 ### API proxy
 
-Cloud function allowing access to the Netlify API via a JWT containing an encrypted access token
+*TODO*
 
-### Static site
+Cloud function allowing access to the Netlify API via a JWT containing an RSA-encrypted access token
+
+### Static site (this repo)
 
 Gatsby site showing available add-ons based on markdown files inside the repository. Also renders metadata for add-on plans on detail pages.
 
@@ -75,6 +77,7 @@ plans:
     description: "Fixed pricing for growing apps"
     price: 25
     interval: 1 month
+callback: https://firebase-addon.netlify.com
 ---
 
 #### Build apps fast, without managing infrastructure
@@ -82,9 +85,11 @@ plans:
 Firebase gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users.
 ```
 
-This can easily be managed using netlify CMS and third party vendors might be able to make a PR to propose or update their add-ons.
+This can easily be managed using *NetlifyCMS* and third party vendors might be able to make PRs to propose or update their add-ons.
 
 ### Firebase example provisioner
+
+*TODO*
 
 Cloud function using the automated Firebase project creation capabilities of the Firebase SDK.
 
