@@ -1,97 +1,89 @@
-<!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
-<p align="center">
-  <a href="https://www.gatsbyjs.org">
-    <img alt="Gatsby" src="https://www.gatsbyjs.org/monogram.svg" width="60" />
-  </a>
-</p>
-<h1 align="center">
-  Gatsby's default starter
-</h1>
+# Proof of concept: Netlify Add-on Marketplace
 
-Kick off your project with this default boilerplate. This starter ships with the main Gatsby configuration files you might need to get up and running blazing fast with the blazing fast app generator for React.
+**Dogfooding the JAMstack**
 
-_Have another more specific idea? You may want to check out our vibrant collection of [official and community-created starters](https://www.gatsbyjs.org/docs/gatsby-starters/)._
+Since there were ideas around having more third party add-ons for Netlify sites but the options around billing them via the Bitballoon API might be complicated this proposal should outline a JAMstacky solution.
 
-## 🚀 Quick start
+The idea is based around taking away responsibilities from the monolithic Bitballoon API and dogfooding some services which users are supposed to use for these kinds of problems. For the long run I'm proposing to take auth and billing away from Bitballoon entirely.
 
-1.  **Create a Gatsby site.**
+There are definitely some changes needed to make those services able to handle teams and subscriptions properly and I hope to point out those using this setup.
 
-    Use the Gatsby CLI to create a new site, specifying the default starter.
+## The Stack
 
-    ```sh
-    # create a new Gatsby site using the default starter
-    gatsby new my-default-starter https://github.com/gatsbyjs/gatsby-starter-default
-    ```
+- **Static site** for presentation of add-ons and their plans
+- **GoCommerce** - Payment handling
+- **GoTrue** / Netlify Identity - User management
+- Add-on (de-)provisioning via cloud functions called from GoCommerce webhook
 
-1.  **Start developing.**
+## Typical flow
 
-    Navigate into your new site’s directory and start it up.
+- A user visits the add-on marketplace
+- They choose a site from the site drop-down
+- They select an add-on they want to enable
+- From the add-on detail page they pick a plan
+- They install the plan and get forwarded to the payment provider
+- After the successful subscription payment setup the add-on is provisioned
+- The user gets a notification saying the add-on is read to use
+- They connect to the add-on via an environment variable
 
-    ```sh
-    cd my-default-starter/
-    gatsby develop
-    ```
+## Implementation
 
-1.  **Open the source code and start editing!**
+### GoCommerce
 
-    Your site is now running at `http://localhost:8000`!
+Prepared a draft PR to allow creating subscriptions for users (needs JWT) in GoCommerce. This uses `.gocommerce-service` for obtaining metadata from the static site.
 
-    _Note: You'll also see a second link: _`http://localhost:8000/___graphql`_. This is a tool you can use to experiment with querying your data. Learn more about using this tool in the [Gatsby tutorial](https://www.gatsbyjs.org/tutorial/part-five/#introducing-graphiql)._
+This should be able to leverage the subscription capabilities of Stripe and PayPal by creating a plan according to the add-on subscription and prompting the user to agree to a regular subscription. The plan details can be taken from the add-on metadata obtained from the static site. This way providers will generate correct receipts.
 
-    Open the `my-default-starter` directory in your code editor of choice and edit `src/pages/index.js`. Save your changes and the browser will update in real time!
+- [Stripe subscription docs](https://stripe.com/docs/billing/subscriptions/examples)
+- [Paypal subscription docs](https://developer.paypal.com/docs/subscriptions/)
 
-## 🧐 What's inside?
+Add-ons are supposed to store details about the connected instance in the subscription metadata in GoCommerce. They will need a token for that.
 
-A quick look at the top-level files and directories you'll see in a Gatsby project.
+GoTrue might need to be able to allow multiple users access to subscriptions of a team account. (In connection to team support in GoTrue.)
 
-    .
-    ├── node_modules
-    ├── src
-    ├── .gitignore
-    ├── .prettierrc
-    ├── gatsby-browser.js
-    ├── gatsby-config.js
-    ├── gatsby-node.js
-    ├── gatsby-ssr.js
-    ├── LICENSE
-    ├── package-lock.json
-    ├── package.json
-    └── README.md
+### GoTrue
 
-1.  **`/node_modules`**: This directory contains all of the modules of code that your project depends on (npm packages) are automatically installed.
+Prepared a draft PR to allow logging in via Netlify OAuth2. To be able to access the netlify API the access token is stored encrypted inside the JWT.
 
-2.  **`/src`**: This directory will contain all of the code related to what you will see on the front-end of your site (what you see in the browser) such as your site header or a page template. `src` is a convention for “source code”.
+This is supposed to be a workaround until the Netlify API uses GoTrue internally.
 
-3.  **`.gitignore`**: This file tells git which files it should not track / not maintain a version history for.
+Handling teams in GoTrue is a requirement for using GoTrue in multiuser team setups.
 
-4.  **`.prettierrc`**: This is a configuration file for [Prettier](https://prettier.io/). Prettier is a tool to help keep the formatting of your code consistent.
+### API proxy
 
-5.  **`gatsby-browser.js`**: This file is where Gatsby expects to find any usage of the [Gatsby browser APIs](https://www.gatsbyjs.org/docs/browser-apis/) (if any). These allow customization/extension of default Gatsby settings affecting the browser.
+Cloud function allowing access to the Netlify API via a JWT containing an encrypted access token
 
-6.  **`gatsby-config.js`**: This is the main configuration file for a Gatsby site. This is where you can specify information about your site (metadata) like the site title and description, which Gatsby plugins you’d like to include, etc. (Check out the [config docs](https://www.gatsbyjs.org/docs/gatsby-config/) for more detail).
+### Static site
 
-7.  **`gatsby-node.js`**: This file is where Gatsby expects to find any usage of the [Gatsby Node APIs](https://www.gatsbyjs.org/docs/node-apis/) (if any). These allow customization/extension of default Gatsby settings affecting pieces of the site build process.
+Gatsby site showing available add-ons based on markdown files inside the repository. Also renders metadata for add-on plans on detail pages.
 
-8.  **`gatsby-ssr.js`**: This file is where Gatsby expects to find any usage of the [Gatsby server-side rendering APIs](https://www.gatsbyjs.org/docs/ssr-apis/) (if any). These allow customization of default Gatsby settings affecting server-side rendering.
+#### Example
 
-9.  **`LICENSE`**: Gatsby is licensed under the MIT license.
+```markdown
+---
+title: "Firebase Realtime Database"
+name: firebase-rtdb
+logo: ./firebase-logo.svg
+banner: ./firebase-banner.png
+plans:
+  - name: Spark Plan
+    description: "Generous limits for hobbyists"
+    price: 0
+  - name: Flame Plan
+    description: "Fixed pricing for growing apps"
+    price: 25
+    interval: 1 month
+---
 
-10. **`package-lock.json`** (See `package.json` below, first). This is an automatically generated file based on the exact versions of your npm dependencies that were installed for your project. **(You won’t change this file directly).**
+#### Build apps fast, without managing infrastructure
 
-11. **`package.json`**: A manifest file for Node.js projects, which includes things like metadata (the project’s name, author, etc). This manifest is how npm knows which packages to install for your project.
+Firebase gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users.
+```
 
-12. **`README.md`**: A text file containing useful reference information about your project.
+This can easily be managed using netlify CMS and third party vendors might be able to make a PR to propose or update their add-ons.
 
-## 🎓 Learning Gatsby
+### Firebase example provisioner
 
-Looking for more guidance? Full documentation for Gatsby lives [on the website](https://www.gatsbyjs.org/). Here are some places to start:
+Cloud function using the automated Firebase project creation capabilities of the Firebase SDK.
 
-- **For most developers, we recommend starting with our [in-depth tutorial for creating a site with Gatsby](https://www.gatsbyjs.org/tutorial/).** It starts with zero assumptions about your level of ability and walks through every step of the process.
-
-- **To dive straight into code samples, head [to our documentation](https://www.gatsbyjs.org/docs/).** In particular, check out the _Guides_, _API Reference_, and _Advanced Tutorials_ sections in the sidebar.
-
-## 💫 Deploy
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/gatsbyjs/gatsby-starter-default)
-
-<!-- AUTO-GENERATED-CONTENT:END -->
+Users can be given access to the Firebase project after logging in with their Google account. Since RBAC in GCP is powerful this can be done without giving away control of plan level or billing info.
