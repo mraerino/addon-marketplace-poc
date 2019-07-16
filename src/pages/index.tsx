@@ -64,7 +64,7 @@ const IndexPage: React.FC<{ data: IndexData }> = ({ data }) => {
             },
           } = node
           return (
-            <Grid item md={3} container>
+            <Grid item md={3} sm={6} container>
               <Paper
                 component={({ onClick, ...props }) => (
                   <GatsbyLink to={slug} {...props as any} />
