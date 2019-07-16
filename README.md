@@ -30,9 +30,9 @@ There are definitely some changes needed to make those services able to handle t
 
 ## Implementation
 
-### GoCommerce
+### GoCommerce ([#178](https://github.com/netlify/gocommerce/pull/178))
 
-Prepared a draft PR to allow creating subscriptions for users (needs JWT) in GoCommerce. This uses `.gocommerce-service` for obtaining metadata from the static site.
+[Prepared a draft PR](https://github.com/netlify/gocommerce/pull/178) to allow creating subscriptions for users (needs JWT) in GoCommerce. This uses `.gocommerce-service` for obtaining metadata from the static site.
 
 This should be able to leverage the subscription capabilities of Stripe and PayPal by creating a plan according to the add-on subscription and prompting the user to agree to a regular subscription. The plan details can be taken from the add-on metadata obtained from the static site. This way providers will generate correct receipts.
 
@@ -43,9 +43,9 @@ Add-ons are supposed to store details about the connected instance in the subscr
 
 GoTrue might need to be able to allow multiple users access to subscriptions of a team account. (In connection to team support in GoTrue.)
 
-### GoTrue
+### GoTrue ([#210](https://github.com/netlify/gotrue/pull/210))
 
-Prepared a draft PR to allow logging in via Netlify OAuth2. To be able to access the netlify API the access token is stored encrypted inside the JWT.
+[Prepared a draft PR](https://github.com/netlify/gotrue/pull/210) to allow logging in via Netlify OAuth2. To be able to access the netlify API the access token is stored encrypted inside the JWT.
 
 This is supposed to be a workaround until the Netlify API uses GoTrue internally.
 
